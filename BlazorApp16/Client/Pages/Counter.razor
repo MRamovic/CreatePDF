@@ -1,0 +1,45 @@
+﻿@page "/counter"
+
+@using iText.Kernel.Pdf
+@using iText.Layout.Element
+@using iText.Layout
+@using iText.Layout.Properties
+
+
+@using System.IO;
+@inject IJSRuntime js
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+	private int currentCount = 0;
+
+	private void IncrementCount()
+	{
+
+		currentCount++;
+		using (MemoryStream s = new MemoryStream())
+		{
+			PdfDocument pdf = new PdfDocument(new PdfWriter(s));
+			Document document = new Document(pdf);
+			String line = "PDF i fajlovi? Hah :D";
+			document.Add(new Paragraph(line));
+			Table table = new Table(UnitValue.CreatePercentArray(8)).UseAllAvailableWidth();
+
+			for (int i = 0; i < 16; i++)
+			{
+				table.AddCell("hi");
+			}
+
+			document.Add(table);
+			document.Close();
+
+			FileUtil.Save(js, "Zklj.pdf", s.ToArray());
+		}
+
+	}
+}
